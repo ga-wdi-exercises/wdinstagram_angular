@@ -7,121 +7,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-beta.2/angular-resource.min.js"></script>
     <base href="/" />
-    <script>
-
-      (function(){
-        angular
-          .module("wdinstagram", [
-            "ui.router",
-            "ngResource"
-          ])
-          .config([
-            "$stateProvider",
-            RouterFunc
-          ])
-          .factory("EntriesFactory", EntriesFactoryFunc)
-          .controller("EntriesIndexCtrl", EntriesIndexCtrlFunc)
-          .controller("EntriesShowCtrl", EntriesShowCtrlFunc)
-
-          function RouterFunc($stateProvider) {
-            $stateProvider
-              .state("entriesIndex", {
-                url: "/entries",
-                templateUrl: "entries/index.html",
-                controller: "EntriesIndexCtrl",
-                controllerAs: "indexVm"
-              })
-              .state("entryShow", {
-                url: "entryies/:id",
-                templateUrl: "entries/show.html",
-                controller: "EntriesShowCtrl",
-                controllerAs: "showVm"
-              })
-          }
-
-          EntriesFactoryFunc.$inject = ["$resource"]
-          function EntriesFactoryFunc($resource) {
-            return $resource("http://localhost:3000/entries/:id", {}, {
-              update: {method: "PUT"}
-            });
-          }
-
-          EntriesIndexCtrlFunc.$inject = ["EntriesFactory"]
-          function EntriesIndexCtrlFunc(EntriesFactory) {
-            var indexVm = this;
-            indexVm.entries = EntriesFactory.query();
-            indexVm.newEntry = new EntriesFactory();
-
-            indexVm.create = function() {
-              indexVm.newEntry.$save().then(function(res) {
-                indexVm.entries.push(res);
-                indexVm.newEntry = new EntriesFactory();
-              })
-            }
-          }
-
-          EntriesShowCtrlFunc.$inject = ["$stateParams", "$state", "EntriesFactory"]
-          function EntriesShowCtrlFunc($stateParams, $state, EntriesFactory) {
-            var showVm = this;
-            showVm.entry = EntriesFactory.get({id: $stateParams.id});
-
-            showVm.update = function() {
-              showVm.entry.$update({id: $stateParams.id});
-            };
-
-            showVm.delete = function() {
-              showVm.entry.$delete({id: $stateParams.id}).then(function() {
-                $state.go("entriesIndex", {}, {reload: true});
-              });
-              // promise added to update the index view ith updated data
-            }
-          }
-
-      })();
-
-    </script>
-    <!-- <script src="js/app.js"></script> -->
+    <script src="js/app.js"></script>
+    <script src="js/entries/entries.factory.js"></script>
+    <script src="js/entries/index.controller.js"></script>
+    <script src="js/entries/show.controller.js"></script>
   </head >
   <body data-ng-app="wdinstagram">
     <h1>WDInstagram</h1>
     <a data-ui-sref="entriesIndex">Entries Index</a>
     <div data-ui-view></div>
 
-    <script type="text/ng-template" id="entries/index.html">
-      <h2>Entries Index</h2>
-      <!-- create -->
-      <form data-ng-submit="indexVm.create()">
-        <input placeholder="Author" data-ng-model="indexVm.newEntry.author" />
-        <input placeholder="Body" data-ng-model="indexVm.newEntry.body" />
-        <input placeholder="Photo Url" data-ng-model="indexVm.newEntry.photo_url" />
-        <button type="submit">Create</button>
-      </form>
-      <br><!-- br-king bad (generally avoid br's) -->
-
-      <div data-ng-repeat="entry in indexVm.entries">
-        <a data-ui-sref="entryShow({id: entry.id})">
-          <!-- wrapped repeated items in a link so the entire entry is clickable -->
-          <img data-ng-src="{{entry.photo_url}}">
-          <p>{{entry.author}}</p>
-          <p>{{entry.body}}</p>
-        </a>
-      </div>
-    </script>
-
-    <script type="text/ng-template" id="entries/show.html">
-      <h2>Entry Show</h2>
-      <img data-ng-src="{{showVm.entry.photo_url}}">
-      <p>{{showVm.entry.author}}</p>
-      <p>{{showVm.entry.body}}</p>
-
-      <!-- Edit/Delete  -->
-      <form>
-        <input placeholder="Author" data-ng-model="showVm.entry.author" />
-        <input placeholder="Body" data-ng-model="showVm.entry.body" />
-        <input placeholder="Photo Url" data-ng-model="showVm.entry.photo_url" />
-        <button data-ng-click="showVm.update()">Update</button>
-        <button data-ng-click="showVm.delete()">Delete</button>
-      </form>
-    </script>
   </body>
 </html>
