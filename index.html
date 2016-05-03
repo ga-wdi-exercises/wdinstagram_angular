@@ -67,7 +67,7 @@
             showVm.entry = dummyData[$stateParams.id]
 
             showVm.update = function() {
-              dummyData[$stateParams.id].title = showVm.entry;
+              dummyData[$stateParams.id] = showVm.entry;
             };
 
             showVm.delete = function() {
@@ -112,10 +112,10 @@
       <p>{{showVm.entry.body}}</p>
 
       <!-- Edit/Delete  -->
-      <form data-ng-submit="showVm.create()">
-        <input placeholder="Author" data-ng-model="showVm.entry.author" />
-        <input placeholder="Body" data-ng-model="showVm.entry.body" />
-        <input placeholder="Photo Url" data-ng-model="showVm.entry.photo_url" />
+      <form data-ng-submit="showVm.update()">
+        <input data-ng-model="showVm.entry.author" />
+        <input data-ng-model="showVm.entry.body" />
+        <input data-ng-model="showVm.entry.photo_url" />
         <button type="submit">Update</button>
         <button data-ui-sref="entriesIndex" data-ng-click="showVm.delete()">Delete</button>
       </form>
