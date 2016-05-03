@@ -11,7 +11,7 @@
     showVm.entry = dummyData[$stateParams.id]
 
     showVm.update = function() {
-      dummyData[$stateParams.id].title = showVm.entry;
+      dummyData[$stateParams.id] = showVm.entry;
     };
 
     showVm.delete = function() {
