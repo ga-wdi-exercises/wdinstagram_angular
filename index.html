@@ -12,12 +12,14 @@
       (function(){
         angular
           .module("wdinstagram", [
-            "ui.router"
+            "ui.router",
+            "ngResource"
           ])
           .config([
             "$stateProvider",
             RouterFunc
           ])
+          .factory("EntriesFactory", EntriesFactoryFunc)
           .controller("EntriesIndexCtrl", EntriesIndexCtrlFunc)
           .controller("EntriesShowCtrl", EntriesShowCtrlFunc)
 
@@ -37,41 +39,41 @@
               })
           }
 
-          var dummyData = [
-            {
-              photo_url: "http://fillmurray.com/300/200",
-              author: "author1",
-              body: "body1"
-            },
-            {
-              photo_url: "http://fillmurray.com/300/200",
-              author: "author2",
-              body: "body2"
-            }
-          ]
+          EntriesFactoryFunc.$inject = ["$resource"]
+          function EntriesFactoryFunc($resource) {
+            return $resource("http://localhost:3000/entries/:id", {}, {
+              update: {method: "PUT"}
+            });
+          }
 
-          function EntriesIndexCtrlFunc() {
+          EntriesIndexCtrlFunc.$inject = ["EntriesFactory"]
+          function EntriesIndexCtrlFunc(EntriesFactory) {
             var indexVm = this;
-            indexVm.entries = dummyData;
-            indexVm.newEntry = {};
+            indexVm.entries = EntriesFactory.query();
+            indexVm.newEntry = new EntriesFactory();
 
             indexVm.create = function() {
-              dummyData.push(indexVm.newEntry);
-              indexVm.newEntry = {};
+              indexVm.newEntry.$save().then(function(res) {
+                indexVm.entries.push(res);
+                indexVm.newEntry = new EntriesFactory();
+              })
             }
           }
 
-          EntriesShowCtrlFunc.$inject = ["$stateParams"]
-          function EntriesShowCtrlFunc($stateParams) {
+          EntriesShowCtrlFunc.$inject = ["$stateParams", "$state", "EntriesFactory"]
+          function EntriesShowCtrlFunc($stateParams, $state, EntriesFactory) {
             var showVm = this;
-            showVm.entry = dummyData[$stateParams.id]
+            showVm.entry = EntriesFactory.get({id: $stateParams.id});
 
             showVm.update = function() {
-              dummyData[$stateParams.id].title = showVm.entry;
+              showVm.entry.$update({id: $stateParams.id});
             };
 
             showVm.delete = function() {
-              dummyData.splice( $stateParams.id, 1 );
+              showVm.entry.$delete({id: $stateParams.id}).then(function() {
+                $state.go("entriesIndex", {}, {reload: true});
+              });
+              // promise added to update the index view ith updated data
             }
           }
 
@@ -97,7 +99,7 @@
       <br><!-- br-king bad (generally avoid br's) -->
 
       <div data-ng-repeat="entry in indexVm.entries">
-        <a data-ui-sref="entryShow({id: $index})">
+        <a data-ui-sref="entryShow({id: entry.id})">
           <!-- wrapped repeated items in a link so the entire entry is clickable -->
           <img data-ng-src="{{entry.photo_url}}">
           <p>{{entry.author}}</p>
@@ -105,6 +107,7 @@
         </a>
       </div>
     </script>
+
     <script type="text/ng-template" id="entries/show.html">
       <h2>Entry Show</h2>
       <img data-ng-src="{{showVm.entry.photo_url}}">
@@ -112,12 +115,12 @@
       <p>{{showVm.entry.body}}</p>
 
       <!-- Edit/Delete  -->
-      <form data-ng-submit="showVm.create()">
+      <form>
         <input placeholder="Author" data-ng-model="showVm.entry.author" />
         <input placeholder="Body" data-ng-model="showVm.entry.body" />
         <input placeholder="Photo Url" data-ng-model="showVm.entry.photo_url" />
-        <button type="submit">Update</button>
-        <button data-ui-sref="entriesIndex" data-ng-click="showVm.delete()">Delete</button>
+        <button data-ng-click="showVm.update()">Update</button>
+        <button data-ng-click="showVm.delete()">Delete</button>
       </form>
     </script>
   </body>
