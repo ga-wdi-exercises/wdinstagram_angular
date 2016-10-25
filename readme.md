@@ -6,7 +6,7 @@ Make a simple instagram clone!
 
 ## Part 1 CRUD with dummy data
 
-Build a simple Angular app that can preform CRUD on dummy data. Each `post` should have a: `photo_url`, `author`, & `body`. Add a router, and templates for at least a `show` & `index` view.
+Build a simple Angular app that can preform CRUD on dummy data. Each `entry` should have a: `photo_url`, `author`, & `body`. Add a router, and templates for at least a `show` & `index` view.
 
 ## Part 2 CRUD with API
 
@@ -14,10 +14,10 @@ Clone the [WDInstagram api](https://github.com/ga-wdi-exercises/wdinstagram_rail
 
 ```shell
 $ bundle install
-$ rake db:create
-$ rake db:migrate
-$ rake db:seed
-$ rake s
+$ rails db:create
+$ rails db:migrate
+$ rails db:seed
+$ rails s
 ```
 
 Create a factory that integrates with the API so that CRUD changes will be persisted
