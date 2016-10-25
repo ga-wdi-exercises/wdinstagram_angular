@@ -6,7 +6,7 @@ Make a simple instagram clone!
 
 ## Part 1 CRUD with dummy data
 
-Build a simple angular app that can preform CRUD on dummy data. The data should have a: photo_url, author, & body. Add a router, and templates for at least a show & index view.
+Build a simple Angular app that can preform CRUD on dummy data. Each `post` should have a: `photo_url`, `author`, & `body`. Add a router, and templates for at least a `show` & `index` view.
 
 ## Part 2 CRUD with API
 
@@ -17,10 +17,10 @@ $ bundle install
 $ rake db:create
 $ rake db:migrate
 $ rake db:seed
-$ rails s
+$ rake s
 ```
 
-Create a factory that integrates with the api so that CRUD changes will be persisted
+Create a factory that integrates with the API so that CRUD changes will be persisted
 
 ## Bonus
 
@@ -28,4 +28,4 @@ If you're feeling frisky add some custom directives
 
 ## Super Bonus
 
-Combine the angular code with the Rails API
+Integrate your Angular code into the Rails API's codebase, so its just one big app.
